@@ -9,6 +9,63 @@ import { createClient } from "@/lib/supabase/browser";
 
 const SHIPPING_COST = 10;
 
+const DISTRICTS: Record<string, string[]> = {
+  Lima: [
+    "Ancón",
+    "Ate",
+    "Barranco",
+    "Breña",
+    "Carabayllo",
+    "Chaclacayo",
+    "Chorrillos",
+    "Cieneguilla",
+    "Comas",
+    "El Agustino",
+    "Independencia",
+    "Jesús María",
+    "La Molina",
+    "La Victoria",
+    "Lima",
+    "Lince",
+    "Los Olivos",
+    "Lurigancho",
+    "Lurín",
+    "Magdalena del Mar",
+    "Miraflores",
+    "Pachacámac",
+    "Pucusana",
+    "Pueblo Libre",
+    "Puente Piedra",
+    "Punta Hermosa",
+    "Punta Negra",
+    "Rímac",
+    "San Bartolo",
+    "San Borja",
+    "San Isidro",
+    "San Juan de Lurigancho",
+    "San Juan de Miraflores",
+    "San Luis",
+    "San Martín de Porres",
+    "San Miguel",
+    "Santa Anita",
+    "Santa María del Mar",
+    "Santa Rosa",
+    "Santiago de Surco",
+    "Surquillo",
+    "Villa El Salvador",
+    "Villa María del Triunfo",
+  ],
+  Callao: [
+    "Callao",
+    "Bellavista",
+    "Carmen de la Legua-Reynoso",
+    "La Perla",
+    "La Punta",
+    "Mi Perú",
+    "Ventanilla",
+  ],
+};
+
 type Product = {
   slug: string;
   name: string;
@@ -18,31 +75,6 @@ type Product = {
 };
 
 type PaymentMethod = "plin" | "interbank" | "bbva";
-
-function normalizeLocation(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLowerCase();
-}
-
-function isCoveredLocation(departamento: string, provincia: string) {
-  const department = normalizeLocation(departamento);
-  const province = normalizeLocation(provincia);
-
-  const isLima =
-    (department === "lima" || department === "lima metropolitana") &&
-    (province === "lima" || province === "lima metropolitana");
-
-  const isCallao =
-    (department === "callao" ||
-      department === "provincia constitucional del callao") &&
-    (province === "callao" ||
-      province === "provincia constitucional del callao");
-
-  return isLima || isCallao;
-}
 
 export default function CheckoutPage() {
   const { items, clearCart } = useCart();
@@ -60,6 +92,13 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] =
     useState<PaymentMethod>("plin");
   const [paymentDataCopied, setPaymentDataCopied] = useState(false);
+
+  const [departamento, setDepartamento] = useState("");
+  const [distrito, setDistrito] = useState("");
+
+  const distritosDisponibles = departamento
+    ? DISTRICTS[departamento] ?? []
+    : [];
 
   useEffect(() => {
     async function loadProducts() {
@@ -183,12 +222,6 @@ export default function CheckoutPage() {
     const departamento = String(formData.get("departamento") ?? "");
     const provincia = String(formData.get("provincia") ?? "");
 
-    if (!isCoveredLocation(departamento, provincia)) {
-      setError(
-        "Por el momento solo realizamos entregas en Lima Metropolitana y Callao."
-      );
-      return;
-    }
 
     setLoading(true);
     setError("");
@@ -317,11 +350,10 @@ export default function CheckoutPage() {
                 setPaymentMethod("plin");
                 setPaymentDataCopied(false);
               }}
-              className={`rounded-xl border-2 p-4 text-center transition ${
-                paymentMethod === "plin"
-                  ? "border-purple-600 bg-purple-50"
-                  : "border-gray-200 hover:border-purple-300"
-              }`}
+              className={`rounded-xl border-2 p-4 text-center transition ${paymentMethod === "plin"
+                ? "border-purple-600 bg-purple-50"
+                : "border-gray-200 hover:border-purple-300"
+                }`}
             >
               <span className="mx-auto flex h-10 w-16 items-center justify-center rounded-lg bg-purple-600 text-lg font-black text-white">
                 plin
@@ -337,11 +369,10 @@ export default function CheckoutPage() {
                 setPaymentMethod("interbank");
                 setPaymentDataCopied(false);
               }}
-              className={`rounded-xl border-2 p-4 text-center transition ${
-                paymentMethod === "interbank"
-                  ? "border-cyan-600 bg-cyan-50"
-                  : "border-gray-200 hover:border-cyan-300"
-              }`}
+              className={`rounded-xl border-2 p-4 text-center transition ${paymentMethod === "interbank"
+                ? "border-cyan-600 bg-cyan-50"
+                : "border-gray-200 hover:border-cyan-300"
+                }`}
             >
               <span className="mx-auto flex h-10 w-16 items-center justify-center rounded-lg bg-cyan-600 text-sm font-black text-white">
                 IBK
@@ -357,11 +388,10 @@ export default function CheckoutPage() {
                 setPaymentMethod("bbva");
                 setPaymentDataCopied(false);
               }}
-              className={`rounded-xl border-2 p-4 text-center transition ${
-                paymentMethod === "bbva"
-                  ? "border-blue-700 bg-blue-50"
-                  : "border-gray-200 hover:border-blue-300"
-              }`}
+              className={`rounded-xl border-2 p-4 text-center transition ${paymentMethod === "bbva"
+                ? "border-blue-700 bg-blue-50"
+                : "border-gray-200 hover:border-blue-300"
+                }`}
             >
               <span className="mx-auto flex h-10 w-16 items-center justify-center rounded-lg bg-blue-700 text-lg font-black text-white">
                 BBVA
@@ -394,29 +424,29 @@ export default function CheckoutPage() {
 
               <div className="mx-auto mt-5 w-full max-w-xs rounded-2xl border border-gray-100 bg-white p-4">
 
-               {/* Logo y nombre de Plin */}
-                  <div className="relative mx-auto h-[100px] w-full max-w-[105px] overflow-hidden">
-                    <Image
-                      src="/images/logo-plin.png"
-                      alt="Plin y titular"
-                      fill
-                      className="object-cover"
-                      style={{ objectPosition: "center 22%" }}
-                    />
-                  </div>
-
-                  {/* Nombre del titular */}
-                  <p className="relative top-12 text-center text-lg font-bold text-gray-900">
-                    Ricardo Jacob Inga Tacza
-                  </p>
-
+                {/* Logo y nombre de Plin */}
+                <div className="relative mx-auto h-[100px] w-full max-w-[105px] overflow-hidden">
                   <Image
-                    src="/images/plin-qr-recortado.jpeg"
-                    alt="Código QR de Plin para realizar el pago"
-                    width={420}
-                    height={420}
-                    className="!h-[400px] !w-[400px] object-contain"
+                    src="/images/logo-plin.png"
+                    alt="Plin y titular"
+                    fill
+                    className="object-cover"
+                    style={{ objectPosition: "center 22%" }}
                   />
+                </div>
+
+                {/* Nombre del titular */}
+                <p className="relative top-12 text-center text-lg font-bold text-gray-900">
+                  Ricardo Jacob Inga Tacza
+                </p>
+
+                <Image
+                  src="/images/plin-qr-recortado.jpeg"
+                  alt="Código QR de Plin para realizar el pago"
+                  width={420}
+                  height={420}
+                  className="!h-[400px] !w-[400px] object-contain"
+                />
 
               </div>
 
@@ -759,46 +789,91 @@ export default function CheckoutPage() {
               </div>
 
               <div className="mt-6 grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2">
+
                 <div>
-                  <label htmlFor="departamento" className="text-sm font-semibold text-slate-700">
+                  <label
+                    htmlFor="departamento"
+                    className="text-sm font-semibold text-slate-700"
+                  >
                     Departamento <span className="text-blue-700">*</span>
                   </label>
-                  <input
+
+                  <select
                     id="departamento"
                     name="departamento"
                     required
                     autoComplete="address-level1"
-                    placeholder="Lima o Callao"
-                    className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#1E40AF] focus:bg-white focus:ring-4 focus:ring-[#1E40AF]/10"
-                  />
+                    value={departamento}
+                    onChange={(event) => {
+                      setDepartamento(event.target.value);
+                      setDistrito("");
+                    }}
+                    className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition hover:border-slate-300 focus:border-[#1E40AF] focus:bg-white focus:ring-4 focus:ring-[#1E40AF]/10"
+                  >
+                    <option value="">Selecciona un departamento</option>
+                    <option value="Lima">Lima</option>
+                    <option value="Callao">Callao</option>
+                  </select>
                 </div>
 
                 <div>
-                  <label htmlFor="provincia" className="text-sm font-semibold text-slate-700">
+                  <label
+                    htmlFor="provincia"
+                    className="text-sm font-semibold text-slate-700"
+                  >
                     Provincia <span className="text-blue-700">*</span>
                   </label>
+
                   <input
                     id="provincia"
                     name="provincia"
                     required
                     autoComplete="address-level2"
-                    placeholder="Lima o Callao"
-                    className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#1E40AF] focus:bg-white focus:ring-4 focus:ring-[#1E40AF]/10"
+                    value={
+                      departamento === "Lima"
+                        ? "Lima"
+                        : departamento === "Callao"
+                          ? "Callao"
+                          : ""
+                    }
+                    readOnly
+                    placeholder="Se completará automáticamente"
+                    className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-600 outline-none"
                   />
                 </div>
 
+
+
                 <div>
-                  <label htmlFor="distrito" className="text-sm font-semibold text-slate-700">
+                  <label
+                    htmlFor="distrito"
+                    className="text-sm font-semibold text-slate-700"
+                  >
                     Distrito <span className="text-blue-700">*</span>
                   </label>
-                  <input
+
+                  <select
                     id="distrito"
                     name="distrito"
                     required
                     autoComplete="address-level3"
-                    placeholder="Tu distrito"
-                    className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#1E40AF] focus:bg-white focus:ring-4 focus:ring-[#1E40AF]/10"
-                  />
+                    value={distrito}
+                    onChange={(event) => setDistrito(event.target.value)}
+                    disabled={!departamento}
+                    className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition hover:border-slate-300 focus:border-[#1E40AF] focus:bg-white focus:ring-4 focus:ring-[#1E40AF]/10 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <option value="">
+                      {departamento
+                        ? "Selecciona tu distrito"
+                        : "Primero selecciona un departamento"}
+                    </option>
+
+                    {distritosDisponibles.map((nombreDistrito) => (
+                      <option key={nombreDistrito} value={nombreDistrito}>
+                        {nombreDistrito}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
