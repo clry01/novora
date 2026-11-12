@@ -63,26 +63,15 @@ export default function HeroProductCarousel() {
         className="flex h-full flex-col items-center justify-center gap-3"
       >
 
-        {/* Contenedor */}
-        <div className="relative z-0 h-full min-h-0 w-full flex-1 overflow-hidden rounded-2xl bg-gray-900">
-          {/* Fondo que cubre todo el carrusel */}
-          <Image
-            src={product.image}
-            alt=""
-            fill
-            aria-hidden="true"
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="scale-125 object-cover object-center blur-xl opacity-100"
-          />
-
-          {/* Imagen principal completa */}
+        {/* Imagen del producto */}
+        <div className="relative z-0 h-full min-h-0 w-full flex-1 overflow-hidden rounded-2xl bg-white">
           <Image
             src={product.image}
             alt={product.name}
             fill
             priority
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="z-10 object-contain object-center transition-opacity duration-500"
+            className="object-cover object-center transition-opacity duration-500"
           />
         </div>
 
