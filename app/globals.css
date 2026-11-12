@@ -1,0 +1,114 @@
+
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: #ffffff;
+  color: #171717;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+input,
+select,
+textarea {
+  color: #171717;
+  background-color: #ffffff;
+}
+
+label {
+  display: block;
+  color: #171717;
+}
+
+
+@keyframes novora-aurora {
+  0% {
+    transform: translate3d(-5%, -3%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(12%, 8%, 0) scale(1.2);
+  }
+  100% {
+    transform: translate3d(-8%, 12%, 0) scale(1.05);
+  }
+}
+
+@keyframes novora-beam {
+  0%, 100% {
+    transform: translate(-15%, -50%) rotate(-18deg);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(15%, -50%) rotate(-18deg);
+    opacity: 1;
+  }
+}
+
+
+/* Ondas luminosas NÓVORA */
+
+.novora-wave-one {
+  transform-origin: center;
+  animation: novora-flow-one 12s ease-in-out infinite alternate;
+}
+
+.novora-wave-two {
+  transform-origin: center;
+  animation: novora-flow-two 16s ease-in-out infinite alternate;
+}
+
+.novora-wave-three {
+  transform-origin: center;
+  animation: novora-flow-three 19s ease-in-out infinite alternate;
+}
+
+@keyframes novora-flow-one {
+  0% {
+    transform: translate(-100px, 30px) scale(1);
+  }
+  100% {
+    transform: translate(100px, -50px) scale(1.12);
+  }
+}
+
+@keyframes novora-flow-two {
+  0% {
+    transform: translate(120px, -40px);
+  }
+  100% {
+    transform: translate(-120px, 60px);
+  }
+}
+
+@keyframes novora-flow-three {
+  0% {
+    transform: translate(-80px, -60px) scale(1);
+  }
+  100% {
+    transform: translate(100px, 80px) scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .novora-wave-one,
+  .novora-wave-two,
+  .novora-wave-three {
+    animation: none;
+  }
+}
