@@ -1,5 +1,6 @@
 
 import { CartProvider } from "@/components/cart/CartProvider";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col">
         <CartProvider>
           {children}
+          <WhatsAppButton />
         </CartProvider>
       </body>
     </html>
