@@ -325,7 +325,7 @@ export async function POST(request: Request) {
 
         const { data: emailData, error: emailError } =
           await resend.emails.send({
-            from: "Tu Tienda <onboarding@resend.dev>",
+            from: "Tu Tienda <pedidos@somosnovora.com>",
             to: [correo.trim()],
             subject: `Tu pedido #${order.id} ha sido registrado`,
             html: `

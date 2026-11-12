@@ -275,7 +275,7 @@ export async function POST(request: Request) {
               }).format(amount);
 
         const { error: emailError } = await resend.emails.send({
-          from: "Tu Tienda <onboarding@resend.dev>",
+          from: "Tu Tienda <pedidos@somosnovora.com>",
           to: [responseEmail],
           subject: `Constancia de tu ${complaintType} #${complaint.id}`,
           html: `
