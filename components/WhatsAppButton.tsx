@@ -10,7 +10,7 @@ export default function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contactar con NÓVORA por WhatsApp"
-      className="fixed bottom-5 right-5 z-[100] flex items-center gap-3 rounded-full bg-[#25D366] px-4 py-3 text-white shadow-lg transition-all duration-200 hover:scale-105 hover:bg-[#1ebe5d]"
+      className="fixed bottom-20 right-5 z-[100] flex items-center gap-3 rounded-full bg-[#25D366] px-4 py-3 text-white shadow-lg transition-all duration-200 hover:scale-105 hover:bg-[#1ebe5d]"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
